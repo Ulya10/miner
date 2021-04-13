@@ -56,6 +56,7 @@ function openSafe(x, y) {
 
                     isOpened[c][d] = true;
                     countOpened++;
+                    ctx.fillStyle = 'red';
                     ctx.fillText(`${counts[c][d]}`, c * grid, d * grid);
                     openSafe(c, d);
                 }
@@ -135,6 +136,7 @@ function openAll(evt) {
             // это строка - работает 
             //ctx.fillText(`${countAround(userX, userY)}`, userX * grid, userY * grid);
             if (isOpened[userX][userY] == false) {
+                ctx.fillStyle = 'red';
                 ctx.fillText(`${counts[userX][userY]}`, userX * grid, userY * grid);
                 isOpened[userX][userY] = true;
                 countOpened++;
@@ -184,14 +186,14 @@ canvas.addEventListener('contextmenu', function (evt) {
         }, false);
         imgMine.src = 'img/mine.png'; // Устанавливает источник файла
         isMarked[mineUserX][mineUserY] = true;
-        console.log(isMarked[mineUserX][mineUserY]);
+        
     }
     else
     {
-        console.log(isMarked[mineUserX][mineUserY]);
+        
         isMarked[mineUserX][mineUserY] = false;
         ctx.fillStyle='rgb(200, 250, 240)';
-        ctx.fillRect(mineUserX * grid + 3, mineUserY * grid + 3, grid - 6, grid - 6);
+        ctx.fillRect(mineUserX * grid + 1, mineUserY * grid + 1, grid - 2, grid - 2);
     }
 });
 
