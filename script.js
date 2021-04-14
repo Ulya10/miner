@@ -110,10 +110,8 @@ for (let i = 0; i < 10; i++) {
 
 }
 
-function openAll(evt) {
-    let userX, userY;
-    userX = Math.trunc(evt.clientX / grid);
-    userY = Math.trunc(evt.clientY / grid);
+function openAll(userX, userY) {
+
     //console.log(userX, userY);
 
     for (i = 0; i < 10; i++) {
@@ -173,7 +171,12 @@ function openAll(evt) {
 }
 
 
-canvas.addEventListener('click', openAll);
+canvas.addEventListener('click', function (evt) {
+    let userX, userY;
+    userX = Math.trunc(evt.clientX / grid);
+    userY = Math.trunc(evt.clientY / grid);
+    openAll(userX, userY);
+});
 
 canvas.addEventListener('contextmenu', function (evt) {
     evt.preventDefault();
@@ -186,13 +189,11 @@ canvas.addEventListener('contextmenu', function (evt) {
         }, false);
         imgMine.src = 'img/mine.png'; // Устанавливает источник файла
         isMarked[mineUserX][mineUserY] = true;
-        
-    }
-    else
-    {
-        
+
+    } else {
+
         isMarked[mineUserX][mineUserY] = false;
-        ctx.fillStyle='rgb(200, 250, 240)';
+        ctx.fillStyle = 'rgb(200, 250, 240)';
         ctx.fillRect(mineUserX * grid + 1, mineUserY * grid + 1, grid - 2, grid - 2);
     }
 });
@@ -201,6 +202,27 @@ canvas.addEventListener("mousedown", function (evt) {
     evt.preventDefault();
     if (evt.which === 2) {
         console.log("Middle");
+        let middleX, middleY;
+        middleX = Math.trunc(evt.clientX / grid);
+        middleY = Math.trunc(evt.clientY / grid);
+        console.log(middleX, middleY);
+        let countUser = 0;
+        for (let v = middleX - 1; v < middleX + 2; v++) {
+            for (let w = middleY - 1; w < middleY + 2; w++) {
+                if (v >= 0 && v <= 9 && w >= 0 && w <= 9 && isMarked[v][w] == true) {
+                    countUser++;
+                }
+            }
+        }
+        if (counts[middleX][middleY] == countUser) {
+            for (let m = middleX - 1; m < middleX + 2; m++) {
+                for (let n = middleY - 1; n < middleY + 2; n++) {
+                    if (m >= 0 && m <= 9 && n >= 0 && n <= 9 && isMarked[m][n] == false && isOpened[m][n] == false) {
+                        openAll(m, n);
+                    }
+                }
+            }
 
+        }
     }
 });
