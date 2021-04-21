@@ -1,18 +1,32 @@
 let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
+let markedField=document.querySelector('.marked');
+let mf = document.querySelector('.how-much-marked');
+let btn = document.querySelector('button');
+let stat = document.querySelector('.status');
+
 ctx.font = '30px Verdana';
 
 const grid = 40;
 const height = 400;
 const width = 400;
 
-const mineX = [];
-const mineY = [];
+play();
+
+btn.addEventListener('click', play);
+
+
+function play(){
+let mineX = [];
+let mineY = [];
 let counts = [];
 let isOpened = [];
 let isMarked = [];
+let countMarked = 0;
 let countOpened = 0;
 let endGame = false;
+markedField.textContent='0';
+stat.textContent=' ';
 
 ctx.fillStyle = 'rgb(200, 250, 240)';
 ctx.fillRect(0, 0, width, height);
@@ -140,6 +154,7 @@ function openAll(userX, userY) {
     for (let i = 0; i < 10; i++) {
         if (userX == mineX[i] && userY == mineY[i]) {
             console.log('Boom!');
+            stat.textContent="Вы проиграли. Эхь";
             endGame = true;
             isOpened[userX][userY] = true;
             ctx.fillStyle = 'rgb(200, 250, 240)';
@@ -193,6 +208,8 @@ function openAll(userX, userY) {
                 mineWin.src = 'img/mine.png'; // Устанавливает источник файла
             }
         }
+        stat.textContent="Вы молодесь! Вы выиграли!";
+        mf.textContent='';
         endGame = true;
     }
 }
@@ -220,12 +237,17 @@ canvas.addEventListener('contextmenu', function (evt) {
                 }, false);
                 imgMine.src = 'img/mine.png'; // Устанавливает источник файла
                 isMarked[mineUserX][mineUserY] = true;
+                countMarked++;
+                markedField.textContent=countMarked;
+
 
             } else {
 
                 isMarked[mineUserX][mineUserY] = false;
                 ctx.fillStyle = 'rgb(200, 250, 240)';
                 ctx.fillRect(mineUserX * grid + 1, mineUserY * grid + 1, grid - 2, grid - 2);
+                countMarked--;
+                markedField.textContent=countMarked;
             }
         }
     }
@@ -248,7 +270,7 @@ canvas.addEventListener("mousedown", function (evt) {
                     }
                 }
             }
-            if (counts[middleX][middleY] == countUser) {
+            if (counts[middleX][middleY] == countUser && countUser!==0) {
                 for (let m = middleX - 1; m < middleX + 2; m++) {
                     for (let n = middleY - 1; n < middleY + 2; n++) {
                         if (m >= 0 && m <= 9 && n >= 0 && n <= 9 && isMarked[m][n] == false && isOpened[m][n] == false) {
@@ -261,3 +283,4 @@ canvas.addEventListener("mousedown", function (evt) {
         }
     }
 });
+};

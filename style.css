@@ -1,4 +1,30 @@
 body
 {
 margin:0;
+font: 20px Verdana;
+}
+
+main{
+    display: flex;
+    /*margin-top: 20px;*/
+}
+
+.right{
+margin-left: 60px;
+margin-top: 50px;
+text-align: center;
+}
+
+.status{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color:darkblue;
+    font-size: 15px;
+}
+
+button{
+    font: 15px Helvetica;
+    padding: 5px;
+    border-radius: 10%;
+    background-color:aquamarine;
 }

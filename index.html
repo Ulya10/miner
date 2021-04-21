@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,11 +8,22 @@
     <title>Miner game</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    
-    <canvas id ="canvas" width = '400px' height = "400px" ></canvas>
 
-    <div class="how-much-marked"></div>
+<body>
+    <main>
+        <canvas id="canvas" width='400px' height="400px"></canvas>
+<div class="right">
+        <div class="how-much-marked">
+            <span>Мин отмечено: </span>
+            <span class="marked">0</span>
+        </div>
+
+        <div class="status"> </div>
+
+        <button>Давай новую игру!</button>
+    </div>
+    </main>
     <script src='script.js'></script>
 </body>
+
 </html>
