@@ -1,6 +1,6 @@
 let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
-ctx.font = '22px Verdana';
+ctx.font = '30px Verdana';
 
 const grid = 40;
 const height = 400;
@@ -12,11 +12,13 @@ let counts = [];
 let isOpened = [];
 let isMarked = [];
 let countOpened = 0;
+let endGame = false;
 
 ctx.fillStyle = 'rgb(200, 250, 240)';
 ctx.fillRect(0, 0, width, height);
 
-ctx.strokeStyle = 'black';
+ctx.lineWidth = 1;
+ctx.strokeStyle = 'rgb(0, 0,0)';
 
 for (let i = 1; i < 10; i++) {
     ctx.beginPath();
@@ -30,7 +32,6 @@ for (let i = 1; i < 10; i++) {
     ctx.stroke();
 
 }
-
 
 function countAround(i, j) {
     let count = 0;
@@ -56,8 +57,7 @@ function openSafe(x, y) {
 
                     isOpened[c][d] = true;
                     countOpened++;
-                    ctx.fillStyle = 'red';
-                    ctx.fillText(`${counts[c][d]}`, c * grid, d * grid);
+                    drawCountsAndBg(c, d);
                     openSafe(c, d);
                 }
 
@@ -71,7 +71,7 @@ for (let i = 0; i < 10; i++) { // объявление мин
     mineX[i] = Math.trunc(Math.random() * 10);
     mineY[i] = Math.trunc(Math.random() * 10);
 }
-for (let g = 0; g < 10; g++) {
+for (let g = 0; g < 10; g++) { // в случае совпадения мин
     for (let h = g + 1; h < 10; h++) {
         if (mineX[g] == mineX[h] && mineY[g] == mineY[h]) {
             mineX[h] = Math.trunc(Math.random() * 10);
@@ -83,146 +83,181 @@ for (let g = 0; g < 10; g++) {
     }
 }
 for (let i = 0; i < 10; i++) {
-    ctx.fillStyle = 'red';
+    //ctx.fillStyle = 'red';
     //ctx.fillRect(mineX[i] * grid, mineY[i] * grid, grid, grid);
 }
-
 
 for (let i = 0; i < 10; i++) {
     counts[i] = [];
     isOpened[i] = [];
     isMarked[i] = [];
     for (let j = 0; j < 10; j++) {
-        //let count = 0;
-        // for (let a = i - 1; a < i + 2; a++) {
-        //     for (let b = j - 1; b < j + 2; b++) {
-
-        //         if (mineX[i] == a && mineY[i] == b) {
-        //             count++;
-        //         }
-        //     }
         counts[i][j] = countAround(i, j);
         isOpened[i][j] = false;
         isMarked[i][j] = false;
         ctx.textBaseline = "top";
         ///ctx.fillText(`${counts[i][j]}`, i * grid, j * grid);
     }
+}
 
+function drawCounts(color, userX, userY) {
+    ctx.fillStyle = color;
+    ctx.fillText(`${counts[userX][userY]}`, userX * grid + grid / 4, userY * grid + grid / 5);
+}
+
+function drawCountsAndBg(userX, userY) {
+    ctx.fillStyle = 'rgb(200, 240, 250)';
+    ctx.fillRect((userX * grid) + 1, (userY * grid) + 1, grid - 2, grid - 2);
+
+    switch (counts[userX][userY]) {
+        case 1:
+            drawCounts('red', userX, userY);
+            break;
+        case 2:
+            drawCounts('green', userX, userY);
+            break;
+        case 3:
+            drawCounts('blue', userX, userY);
+            break;
+        case 4:
+            drawCounts('black', userX, userY);
+            break;
+        case 0: {
+            ctx.fillStyle = 'rgb(200, 240, 250)';
+            ctx.fillRect(userX * grid + 1, userY * grid + 1, grid - 2, grid - 2);
+            ctx.strokeStyle = 'rgb(200, 200, 200)';
+            ctx.strokeRect(userX * grid, userY * grid, grid, grid);
+        };
+        break;
+    default:
+        drawCounts('white', userX, userY);
+        break;
+    }
 }
 
 function openAll(userX, userY) {
 
-    //console.log(userX, userY);
-
-    for (i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
         if (userX == mineX[i] && userY == mineY[i]) {
             console.log('Boom!');
-            ctx.fillStyle = 'red';
-            ctx.fillRect(mineX[i] * grid, mineY[i] * grid, grid, grid);
+            endGame = true;
+            isOpened[userX][userY] = true;
+            ctx.fillStyle = 'rgb(200, 250, 240)';
+            ctx.fillRect(userX * grid + 1, userY * grid + 1, grid - 2, grid - 2); // костыль
+            let mineOpened = new Image();
+            mineOpened.addEventListener("load", function () {
+                ctx.drawImage(mineOpened, mineX[i] * grid + 3, mineY[i] * grid + 3, grid - 6, grid - 6); // здесь выполняет drawImage функцию
+            }, false);
+            mineOpened.src = 'img/po.png'; // Устанавливает источник файла
+
 
             for (let k = 0; k < 10; k++) {
                 if (i == k) {
+                   // ctx.fillStyle = 'rgb(200, 250, 240)';
+                   // ctx.fillRect((userX * grid) + 1, (userY * grid) + 1, grid - 2, grid - 2);
                     continue;
                 } else {
-                    ctx.fillStyle = 'black';
-                    ctx.fillRect(mineX[k] * grid, mineY[k] * grid, grid, grid);
+                    if (isMarked[mineX[k]][mineY[k]]==true){
+
+                    
+                    ctx.fillStyle = 'rgb(200, 250, 240)';
+                   ctx.fillRect((mineX[k] * grid) + 1, (mineY[k] * grid) + 1, grid - 2, grid - 2);
+                
+                
+                    let mineClosed = new Image();
+                    mineClosed.addEventListener("load", function () {
+                        ctx.drawImage(mineClosed, mineX[k] * grid + 3, mineY[k] * grid + 3, grid - 6, grid - 6); // здесь выполняет drawImage функцию
+                    }, false);
+                    mineClosed.src = 'img/sad.png'; // Устанавливает источник файла
+                }
                 }
             }
-
         } else {
 
-            // это строка - работает 
-            //ctx.fillText(`${countAround(userX, userY)}`, userX * grid, userY * grid);
-            if (isOpened[userX][userY] == false) {
-                ctx.fillStyle = 'red';
-                ctx.fillText(`${counts[userX][userY]}`, userX * grid, userY * grid);
+            if (isOpened[userX][userY] == false && endGame == false) {
+                drawCountsAndBg(userX, userY);
                 isOpened[userX][userY] = true;
                 countOpened++;
-                //if (counts[userX][userY] == 0) {
                 openSafe(userX, userY);
-                //}
             }
-
-            // if (counts[userX][userY] == 0) {
-            //     for (let c = userX - 1; c < userX + 2; c++) {
-            //         for (let d = userY - 1; d < userY + 2; d++) {
-            //             if (c >= 0 && d >= 0 && counts[c][d] == 0) {
-            //                 for (let e = c - 1; e < c + 2; e++) {
-            //                     for (let f = d - 1; f < d + 2; f++) {
-            //                         if (e >= 0 && f >= 0) {
-            //                             ctx.fillText(`${counts[e][f]}`, e * grid, f * grid);
-            //                         }
-            //                     }
-            //                 }
-            //             ctx.fillText(`${counts[c][d]}`, c * grid, d * grid);    
-            //             }
-
-            //         }
-            //     }
-            // }
-
         }
-
     }
     if (countOpened == 90) {
         console.log("Win!");
+        for (let p = 0; p < 10; p++) {
+            if (isMarked[mineX[p]][mineY[p]] == false) {
+                let mineWin = new Image();
+                mineWin.addEventListener("load", function () {
+                    ctx.drawImage(mineWin, mineX[p] * grid + 3, mineY[p] * grid + 3, grid - 6, grid - 6); // здесь выполняет drawImage функцию
+                }, false);
+                mineWin.src = 'img/mine.png'; // Устанавливает источник файла
+            }
+        }
+        endGame = true;
     }
-
 }
 
-
 canvas.addEventListener('click', function (evt) {
-    let userX, userY;
-    userX = Math.trunc(evt.clientX / grid);
-    userY = Math.trunc(evt.clientY / grid);
-    openAll(userX, userY);
+    if (endGame == false) {
+        let userX, userY;
+        userX = Math.trunc(evt.clientX / grid);
+        userY = Math.trunc(evt.clientY / grid);
+        openAll(userX, userY);
+    }
 });
 
 canvas.addEventListener('contextmenu', function (evt) {
     evt.preventDefault();
-    let imgMine = new Image();
-    let mineUserX = Math.trunc(evt.clientX / grid),
-        mineUserY = Math.trunc(evt.clientY / grid);
-    if (isMarked[mineUserX][mineUserY] == false) {
-        imgMine.addEventListener("load", function () {
-            ctx.drawImage(imgMine, mineUserX * grid + 3, mineUserY * grid + 3, grid - 6, grid - 6); // здесь выполняет drawImage функцию
-        }, false);
-        imgMine.src = 'img/mine.png'; // Устанавливает источник файла
-        isMarked[mineUserX][mineUserY] = true;
+    if (endGame == false) {
 
-    } else {
+        let imgMine = new Image();
+        let mineUserX = Math.trunc(evt.clientX / grid),
+            mineUserY = Math.trunc(evt.clientY / grid);
+        if (isOpened[mineUserX][mineUserY] == false) {
+            if (isMarked[mineUserX][mineUserY] == false) {
+                imgMine.addEventListener("load", function () {
+                    ctx.drawImage(imgMine, mineUserX * grid + 3, mineUserY * grid + 3, grid - 6, grid - 6); // здесь выполняет drawImage функцию
+                }, false);
+                imgMine.src = 'img/mine.png'; // Устанавливает источник файла
+                isMarked[mineUserX][mineUserY] = true;
 
-        isMarked[mineUserX][mineUserY] = false;
-        ctx.fillStyle = 'rgb(200, 250, 240)';
-        ctx.fillRect(mineUserX * grid + 1, mineUserY * grid + 1, grid - 2, grid - 2);
+            } else {
+
+                isMarked[mineUserX][mineUserY] = false;
+                ctx.fillStyle = 'rgb(200, 250, 240)';
+                ctx.fillRect(mineUserX * grid + 1, mineUserY * grid + 1, grid - 2, grid - 2);
+            }
+        }
     }
 });
 
 canvas.addEventListener("mousedown", function (evt) {
     evt.preventDefault();
-    if (evt.which === 2) {
-        console.log("Middle");
-        let middleX, middleY;
-        middleX = Math.trunc(evt.clientX / grid);
-        middleY = Math.trunc(evt.clientY / grid);
-        console.log(middleX, middleY);
-        let countUser = 0;
-        for (let v = middleX - 1; v < middleX + 2; v++) {
-            for (let w = middleY - 1; w < middleY + 2; w++) {
-                if (v >= 0 && v <= 9 && w >= 0 && w <= 9 && isMarked[v][w] == true) {
-                    countUser++;
-                }
-            }
-        }
-        if (counts[middleX][middleY] == countUser) {
-            for (let m = middleX - 1; m < middleX + 2; m++) {
-                for (let n = middleY - 1; n < middleY + 2; n++) {
-                    if (m >= 0 && m <= 9 && n >= 0 && n <= 9 && isMarked[m][n] == false && isOpened[m][n] == false) {
-                        openAll(m, n);
+    if (endGame == false) {
+        if (evt.which === 2) {
+            // console.log("Middle");
+            let middleX, middleY;
+            middleX = Math.trunc(evt.clientX / grid);
+            middleY = Math.trunc(evt.clientY / grid);
+
+            let countUser = 0;
+            for (let v = middleX - 1; v < middleX + 2; v++) {
+                for (let w = middleY - 1; w < middleY + 2; w++) {
+                    if (v >= 0 && v <= 9 && w >= 0 && w <= 9 && isMarked[v][w] == true) {
+                        countUser++;
                     }
                 }
             }
+            if (counts[middleX][middleY] == countUser) {
+                for (let m = middleX - 1; m < middleX + 2; m++) {
+                    for (let n = middleY - 1; n < middleY + 2; n++) {
+                        if (m >= 0 && m <= 9 && n >= 0 && n <= 9 && isMarked[m][n] == false && isOpened[m][n] == false) {
+                            openAll(m, n);
+                        }
+                    }
+                }
 
+            }
         }
     }
 });
