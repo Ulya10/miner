@@ -10,18 +10,33 @@
 </head>
 
 <body>
-    <main>
-        <canvas id="canvas" width='400px' height="400px"></canvas>
-<div class="right">
-        <div class="how-much-marked">
-            <span>Мин отмечено: </span>
-            <span class="marked">0</span>
+    <div class="modal hidden">
+        <div class="quit">
         </div>
-
-        <div class="status"> </div>
-
-        <button>Давай новую игру!</button>
+        <form action="submit">
+            <label for="how-much">Сколько мин вы хотите найти?</label>
+            <input type="text" id="how-much">
+            <button class="agree">Вот столько</button>
+            <button class="ten">Хочу десять</button>
+            <button class="rnd">Не хочу ничего решать, реши за меня</button>
+        </form>
     </div>
+    <main class="visible">
+
+        <canvas id="canvas" width='400px' height="400px"></canvas>
+
+        <div class="right">
+
+            <div class="well">Что ж, мин здесь отныне <span class="how-much-mines">10</span></div>
+            <div class="how-much-marked">
+                <span>Мин отмечено: </span>
+                <span class="marked">0</span>
+            </div>
+
+            <div class="status"> </div>
+
+            <button class="play">Давай новую игру!</button>
+        </div>
     </main>
     <script src='script.js'></script>
 </body>
