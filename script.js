@@ -12,6 +12,7 @@ let form = document.querySelector("form");
 let input = document.getElementById('how-much');
 let btnAgree = document.querySelector('.agree');
 let btnTen = document.querySelector(".ten");
+let btnRnd = document.querySelector(".rnd");
 
 
 let main = document.querySelector('main');
@@ -25,29 +26,169 @@ const grid = 40;
 const height = 400;
 const width = 400;
 
-let howMuch=10;
-/*
-function askMines(){
+let howMuch; // = 10;
+
+let mines; //массив мин
+let counts; //массив чисел, сколько мин вокруг
+let isOpened;
+let isMarked;
+let countMarked;
+let countOpened;
+let endGame;
+let seed;
+let a;
+let b;
+let avail;
+
+let canvasClick, canvasRightClick, canvasMouseClick, 
+btnArgeeClick, quitClick, btnTenClick, btnRndClick, btnPlayClick;
+
+function askMines() {
+    btnPlay.removeEventListener('click', btnPlayClick);
     main.classList.remove("visible");
     main.classList.add("hidden");
     modal.classList.remove("hidden");
 
-    btnAgree.addEventListener('click', function (evt) {
-        
+    btnArgeeClick = function (evt) {
         evt.preventDefault();
         howMuch = +input.value;
-        console.log(howMuch, typeof(howMuch));
+        //console.log(howMuch, typeof (howMuch));
         modal.classList.add("hidden");
-        howMuchMines.textContent=howMuch;
+        howMuchMines.textContent = howMuch;
         main.classList.add('visible');
         play();
-    });
+    };
 
-}
-*/
-function play() {
+    quitClick = function () {
+        howMuch = 10;
+        modal.classList.add("hidden");
+        howMuchMines.textContent = howMuch;
+        main.classList.add('visible');
+        play();
+    };
+
+    btnTenClick = function (evt) {
+        evt.preventDefault();
+        input.value = 10;
+    };
+
+    btnRndClick = function (evt) {
+        evt.preventDefault();
+        input.value = Math.floor(Math.random() * 100);
+    };
+
+    btnTen.addEventListener('click', btnTenClick);
+    btnRnd.addEventListener('click', btnRndClick);
+    btnAgree.addEventListener('click', btnArgeeClick);
+    quit.addEventListener('click', quitClick); 
 
     
+}
+
+
+
+function play() {
+
+    btnPlayClick = function(){
+        
+        console.log("I asked!");
+        //console.log(canvasMouseClick);
+        askMines();
+        //play();
+    };
+    
+    btnPlay.addEventListener('click', btnPlayClick);
+
+canvas.removeEventListener('click', canvasClick);
+        canvas.removeEventListener('contextmenu', canvasRightClick);
+        canvas.removeEventListener("mousedown", canvasMouseClick);
+        
+        btnTen.removeEventListener('click', btnTenClick);
+        btnRnd.removeEventListener('click', btnRndClick);
+        btnAgree.removeEventListener('click', btnArgeeClick);
+        quit.removeEventListener('click', quitClick);
+
+   
+
+/*     btnAgree.removeEventListener('click', btnArgeeClick);
+    btnTen.removeEventListener('click', btnTenClick);
+    btnRnd.removeEventListener('click', btnRndClick);
+    quit.removeEventListener('click', quitClick); */
+
+    canvasClick = function (evt) {
+        if (endGame == false) {
+            let userX, userY;
+            userX = Math.trunc(evt.clientY / grid);
+            userY = Math.trunc(evt.clientX / grid);
+            console.log(mines);
+            console.log(seed);
+            console.log(userX, userY);
+            openAll(userX, userY);
+        }
+    };
+
+    canvasRightClick = function (evt) {
+        evt.preventDefault();
+        console.log(countMarked);
+        if (endGame == false) {
+
+            let mineUserX = Math.trunc(evt.clientY / grid),
+                mineUserY = Math.trunc(evt.clientX / grid);
+            if (isOpened[mineUserX][mineUserY] == false) {
+                if (isMarked[mineUserX][mineUserY] == false) {
+
+                    paintEmo(mineUserY, mineUserX, 'img/mine.png');
+                    isMarked[mineUserX][mineUserY] = true;
+                    countMarked++;
+                    markedField.textContent = countMarked;
+
+                } else {
+
+                    isMarked[mineUserX][mineUserY] = false;
+                    ctx.fillStyle = 'rgb(200, 250, 240)';
+                    ctx.fillRect(mineUserY * grid + 1, mineUserX * grid + 1, grid - 2, grid - 2);
+                    countMarked--;
+                    markedField.textContent = countMarked;
+                }
+            }
+            console.log(countMarked);
+            console.log(mineUserX, mineUserY);
+        }
+
+    };
+
+    canvasMouseClick = function (evt) {
+        evt.preventDefault();
+        if (endGame == false) {
+            if (evt.which === 2) {
+                // console.log("Middle");
+                let middleX, middleY;
+                middleX = Math.trunc(evt.clientY / grid);
+                middleY = Math.trunc(evt.clientX / grid);
+
+                let countUser = 0;
+                for (let v = middleX - 1; v < middleX + 2; v++) {
+                    for (let w = middleY - 1; w < middleY + 2; w++) {
+                        if (v >= 0 && v <= 9 && w >= 0 && w <= 9 && isMarked[v][w] == true) {
+                            countUser++;
+                        }
+                    }
+                }
+
+                if (counts[middleX][middleY] == countUser && countUser !== 0) {
+                    for (let m = middleX - 1; m < middleX + 2; m++) {
+                        for (let n = middleY - 1; n < middleY + 2; n++) {
+                            if (m >= 0 && m <= 9 && n >= 0 && n <= 9 && isMarked[m][n] == false && isOpened[m][n] == false) {
+                                openAll(m, n);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    };
+
     function openAll(userX, userY) {
 
         if (mines[userX][userY] == true) {
@@ -58,7 +199,7 @@ function play() {
             mines.forEach((item, i) => { //было ismarked
                 item.forEach((item_j, j) => {
                     if (item_j == true) {
-                        if ((i == userX && j == userY)==false) { // changed 
+                        if ((i == userX && j == userY) == false) { // changed
                             paintEmo(j, i, 'img/sad.png'); //changed
                         }
                     }
@@ -93,12 +234,6 @@ function play() {
             endGame = true;
         }
 
-        console.log(howMuch);
-            console.log(seed);
-console.log(seed.length);
-console.log(mines);
-console.log(counts);
-console.log(userX, userY);
     }
 
     function paintEmo(i, j, imageSrc) {
@@ -132,9 +267,9 @@ console.log(userX, userY);
         ctx.fillText(`${counts[userX][userY]}`, userY * grid + grid / 4, userX * grid + grid / 5); //changed
     }
 
-    function drawCountsAndBg(userX, userY) {//changed
+    function drawCountsAndBg(userX, userY) { //changed
         ctx.fillStyle = 'rgb(200, 240, 250)';
-        ctx.fillRect((userY * grid) + 1, (userX * grid) + 1, grid - 2, grid - 2); 
+        ctx.fillRect((userY * grid) + 1, (userX * grid) + 1, grid - 2, grid - 2);
 
         switch (counts[userX][userY]) {
             case 1:
@@ -157,19 +292,20 @@ console.log(userX, userY);
             }
             break;
         default:
-            drawCounts('white', userY, userX);
+            drawCounts('white', userX, userY);
             break;
         }
     }
 
 
-    let mines = []; //массив мин
-    let counts = []; //массив чисел, сколько мин вокруг 
-    let isOpened = [];
-    let isMarked = [];
-    let countMarked = 0;
-    let countOpened = 0;
-    let endGame = false;
+    mines = []; //массив мин
+    counts = []; //массив чисел, сколько мин вокруг
+    isOpened = [];
+    isMarked = [];
+    countMarked = 0;
+    countOpened = 0;
+    endGame = false;
+
     console.log(howMuch);
     markedField.textContent = '0';
     stat.textContent = ' ';
@@ -189,18 +325,18 @@ console.log(userX, userY);
         ctx.stroke();
     }
 
-    let seed = [];
-   // let howMuch = 10;
+    seed = [];
+    // let howMuch = 10;
 
     for (let i = 0; i < 10; i++) {
         mines[i] = [];
-        counts[i] = []; //массив чисел, сколько мин вокруг 
+        counts[i] = []; //массив чисел, сколько мин вокруг
         isOpened[i] = [];
         isMarked[i] = [];
 
         for (let j = 0; j < 10; j++) {
             mines[i][j] = false;
-            counts[i][j] = 0; //массив чисел, сколько мин вокруг 
+            counts[i][j] = 0; //массив чисел, сколько мин вокруг
             isOpened[i][j] = false;
             isMarked[i][j] = false;
         }
@@ -214,12 +350,12 @@ console.log(userX, userY);
         seed.splice((Math.trunc(Math.random() * seed.length)), 1);
     }
 
-    console.log(seed);
-    console.log(seed.length);
+    //console.log(seed);
+    //console.log(seed.length);
 
-    let a = 0;
-    let b = 0;
-    let avail = true;
+    a = 0;
+    b = 0;
+    avail = true;
 
     function check(x, y) {
         if (x < 0 || x > 9 || y < 0 || y > 9) {
@@ -247,84 +383,14 @@ console.log(userX, userY);
         }
     });
 
-    canvas.addEventListener('click', function (evt) {
-        if (endGame == false) {
-            let userX, userY;
-            userX = Math.trunc(evt.clientY / grid);
-            userY = Math.trunc(evt.clientX / grid);
-            console.log(userX,userY);
-            openAll(userX, userY);
-            
-        }
-    });
+    canvas.addEventListener('click', canvasClick);
+    canvas.addEventListener('contextmenu', canvasRightClick);
+    canvas.addEventListener("mousedown", canvasMouseClick);
 
-    canvas.addEventListener('contextmenu', function (evt) {
-        evt.preventDefault();
-        if (endGame == false) {
-
-            let mineUserX = Math.trunc(evt.clientY / grid),
-                mineUserY = Math.trunc(evt.clientX / grid);
-            if (isOpened[mineUserX][mineUserY] == false) {
-                if (isMarked[mineUserX][mineUserY] == false) {
-
-                    paintEmo(mineUserY, mineUserX, 'img/mine.png');
-                    isMarked[mineUserX][mineUserY] = true;
-                    countMarked++;
-                    markedField.textContent = countMarked;
-
-                } else {
-
-                    isMarked[mineUserX][mineUserY] = false;
-                    ctx.fillStyle = 'rgb(200, 250, 240)';
-                    ctx.fillRect(mineUserY * grid + 1, mineUserX * grid + 1, grid - 2, grid - 2);
-                    countMarked--;
-                    markedField.textContent = countMarked;
-                }
-            }
-        }
-    });
-
-    canvas.addEventListener("mousedown", function (evt) {
-        evt.preventDefault();
-        if (endGame == false) {
-            if (evt.which === 2) {
-                // console.log("Middle");
-                let middleX, middleY;
-                middleX = Math.trunc(evt.clientY / grid);
-                middleY = Math.trunc(evt.clientX / grid);
-
-                let countUser = 0;
-                for (let v = middleX - 1; v < middleX + 2; v++) {
-                    for (let w = middleY - 1; w < middleY + 2; w++) {
-                        if (v >= 0 && v <= 9 && w >= 0 && w <= 9 && isMarked[v][w] == true) {
-                            countUser++;
-                        }
-                    }
-                }
-                if (counts[middleX][middleY] == countUser && countUser !== 0) {
-                    for (let m = middleX - 1; m < middleX + 2; m++) {
-                        for (let n = middleY - 1; n < middleY + 2; n++) {
-                            if (m >= 0 && m <= 9 && n >= 0 && n <= 9 && isMarked[m][n] == false && isOpened[m][n] == false) {
-                                openAll(m, n);
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-    });
-
-    btnPlay.addEventListener('click', function(){
-        console.log ("I asked!");
-        //askMines();
-        
-    });
-
-    console.log(seed);
-console.log(seed.length);
-console.log(mines);
-console.log(counts);
+    //console.log(seed);
+    //console.log(seed.length);
+    //console.log(mines);
+    //console.log(counts);
 
 }
 /* console.log(seed);
@@ -332,6 +398,6 @@ console.log(seed.length);
 console.log(mines);
 console.log(counts); */
 
-//askMines();
-play();
+askMines();
+//play();
 console.log(howMuch);

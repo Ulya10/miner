@@ -6,19 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miner game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="modal hidden">
+    <div class="modal">
         <div class="quit">
         </div>
         <form action="submit">
             <label for="how-much">Сколько мин вы хотите найти?</label>
             <input type="text" id="how-much">
-            <button class="agree">Вот столько</button>
-            <button class="ten">Хочу десять</button>
-            <button class="rnd">Не хочу ничего решать, реши за меня</button>
+            <button class="agree">Вот столько!</button>
+            <button class="ten onlyvalue">Хочу десять</button>
+            <button class="rnd onlyvalue">Не хочу ничего решать, реши за меня</button>
         </form>
     </div>
     <main class="visible">
