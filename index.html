@@ -8,7 +8,8 @@
     <title>Miner game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&family=Roboto:wght@300;400&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -16,14 +17,37 @@
     <div class="modal">
         <div class="quit">
         </div>
-        <form action="submit">
+        <form action="submit" class="first-form">
             <label for="how-much">Сколько мин вы хотите найти?</label>
-            <input type="text" id="how-much">
+            <input type="text" id="how-much" autofocus>
             <button class="agree">Вот столько!</button>
             <button class="ten onlyvalue">Хочу десять</button>
             <button class="rnd onlyvalue">Не хочу ничего решать, реши за меня</button>
         </form>
+        <div class="think"></div>
     </div>
+
+    <div class="winner hidden">
+        <div class="quit-win">
+        </div>
+        <form action="submit" class="second-form">
+            <label for="winner-name">Кто вы?</label>
+            <input type="text" id="winner-name" autofocus>
+            <button class="name">Вот кто!</button>
+        </form>
+    </div>
+
+    <div class="winners hidden">
+        <h2>Таблица молодцов</h2>
+    <!-- <div class="quit-win">
+        </div> -->
+        <ol class="winners-list">
+        </ol>
+        <button class="thank">Спасибо, очень интересно</button>
+    </div>
+
+
+
     <main class="visible">
 
         <canvas id="canvas" width='400px' height="400px"></canvas>
@@ -39,6 +63,17 @@
             <div class="status"> </div>
 
             <button class="play">Давай новую игру!</button>
+
+            <div class="timer">
+                <div class="timer-label">Вы возитесь уже</div>
+                <div class="timer-wrapper">
+                    <div class="hours"> 0 </div> ч
+                    <div class="minutes"> 0 </div> мин
+                    <div class="seconds"> 0 </div> сек
+                </div>
+            </div>
+
+
         </div>
     </main>
     <script src='script.js'></script>

@@ -24,7 +24,7 @@ main {
     border-radius: 5px;
 }
 
-.agree{
+.agree, .name, .thank{
     font-family: 'Roboto', sans-serif;
     border-radius: 5px;
     color: white;
@@ -51,7 +51,7 @@ main {
 }
 
 
-.quit::before{
+.quit::before, .quit-win::before{
     position: absolute;
     right: 10px;
     top: 20px;
@@ -61,7 +61,7 @@ main {
     background-color: #fff;
     transform: rotate(45deg);
 }
-.quit::after{
+.quit::after, .quit-win::after{
     position: absolute;
     right: 10px;
     top: 20px;
@@ -74,11 +74,21 @@ main {
 
 form{
     display: block;
-    margin-top: 20%;
+    margin-top: 15%;
 }
+
+.think{
+    font-size: 10px;
+    margin-top: 10px;
+}
+
 
 .hidden {
     display: none;
+}
+
+.visible-block{
+    display: block;
 }
 
 .visible {
@@ -107,4 +117,45 @@ label {
     padding: 5px;
     border-radius: 10%;
     background-color: aquamarine;
+}
+
+.timer{
+    margin-top: 90px;
+font-size: 17px;
+}
+
+.timer-wrapper{
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.timer-wrapper>div{
+    margin: 0 10px;
+}
+
+.timer-wrapper>div:first-child{
+    margin-left: 0;
+}
+
+.winner, .winners {
+    font-family: 'Noto Sans JP', sans-serif;
+    position: absolute;
+    width: 200px;
+    height: 300px;
+    top: 50px;
+    left: 200px;
+    background-color:royalblue;
+    text-align: center;
+    color: white;
+    border-radius: 5px;
+}
+
+h2{
+font-size: 14px;
+margin-top: 40px;
+}
+
+.thank{
+    font-size: 10px;
 }

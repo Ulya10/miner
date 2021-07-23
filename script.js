@@ -8,16 +8,33 @@ let stat = document.querySelector('.status');
 
 let modal = document.querySelector(".modal");
 let quit = document.querySelector(".quit");
-let form = document.querySelector("form");
+//let form = document.querySelector("form");
 let input = document.getElementById('how-much');
 let btnAgree = document.querySelector('.agree');
 let btnTen = document.querySelector(".ten");
 let btnRnd = document.querySelector(".rnd");
-
+let think = document.querySelector('.think');
 
 let main = document.querySelector('main');
 let well = document.querySelector(".well");
 let howMuchMines = document.querySelector(".how-much-mines");
+
+let hours = document.querySelector(".hours");
+let minutes = document.querySelector(".minutes");
+let seconds = document.querySelector(".seconds");
+
+let start, end;
+
+let winner = document.querySelector(".winner");
+let quitWin = document.querySelector('.quit-win');
+let quitWinClick;
+
+let nameWin = document.querySelector(".name");
+let winners = document.querySelector(".winners");
+let nameWinClick;
+
+let thank = document.querySelector('.thank');
+let thankClick;
 
 ctx.font = '30px Verdana';
 ctx.textBaseline = "top";
@@ -39,9 +56,11 @@ let seed;
 let a;
 let b;
 let avail;
+let secondsValue, minutesValue, hoursValue;
+let timerId;
 
-let canvasClick, canvasRightClick, canvasMouseClick, 
-btnArgeeClick, quitClick, btnTenClick, btnRndClick, btnPlayClick;
+let canvasClick, canvasRightClick, canvasMouseClick,
+    btnArgeeClick, quitClick, btnTenClick, btnRndClick, btnPlayClick;
 
 function askMines() {
     btnPlay.removeEventListener('click', btnPlayClick);
@@ -51,12 +70,19 @@ function askMines() {
 
     btnArgeeClick = function (evt) {
         evt.preventDefault();
-        howMuch = +input.value;
-        //console.log(howMuch, typeof (howMuch));
-        modal.classList.add("hidden");
-        howMuchMines.textContent = howMuch;
-        main.classList.add('visible');
-        play();
+        if (input.value == "" || input.value < 0 || input.value >= 100 || isNaN(input.value) == true) {
+            think.classList.add('visible-block');
+            think.textContent = "Подумайте над своим поведением";
+        } else {
+            howMuch = +input.value;
+            think.classList.remove('visible-block');
+            think.classList.add('hidden');
+            //console.log(howMuch, typeof (howMuch));
+            modal.classList.add("hidden");
+            howMuchMines.textContent = howMuch;
+            main.classList.add('visible');
+            play();
+        }
     };
 
     quitClick = function () {
@@ -80,40 +106,70 @@ function askMines() {
     btnTen.addEventListener('click', btnTenClick);
     btnRnd.addEventListener('click', btnRndClick);
     btnAgree.addEventListener('click', btnArgeeClick);
-    quit.addEventListener('click', quitClick); 
+    quit.addEventListener('click', quitClick);
 
-    
+
 }
 
 
 
 function play() {
+    seconds.textContent = 0;
+    minutes.textContent = 0;
+    hours.textContent = 0;
+    clearInterval(timerId);
+    start = new Date();
+    //let startTime = start.getTime();
+    secondsValue = 0;
+    minutesValue = 0;
+    hoursValue = 0;
+    //console.log(startTime);
 
-    btnPlayClick = function(){
-        
+
+    timerId = setInterval(() => {
+        end = new Date();
+        let differ = end - start;
+        console.log(differ);
+        secondsValue++;
+        if (secondsValue == 60) {
+            secondsValue = 0;
+            minutesValue++;
+            if (minutesValue == 60) {
+                minutesValue = 0;
+                hoursValue++;
+            }
+        }
+        seconds.textContent = secondsValue;
+        minutes.textContent = minutesValue;
+        hours.textContent = hoursValue;
+    }, 1000);
+
+
+    btnPlayClick = function () {
+
         console.log("I asked!");
         //console.log(canvasMouseClick);
         askMines();
         //play();
     };
-    
+
     btnPlay.addEventListener('click', btnPlayClick);
 
-canvas.removeEventListener('click', canvasClick);
-        canvas.removeEventListener('contextmenu', canvasRightClick);
-        canvas.removeEventListener("mousedown", canvasMouseClick);
-        
-        btnTen.removeEventListener('click', btnTenClick);
-        btnRnd.removeEventListener('click', btnRndClick);
-        btnAgree.removeEventListener('click', btnArgeeClick);
-        quit.removeEventListener('click', quitClick);
+    canvas.removeEventListener('click', canvasClick);
+    canvas.removeEventListener('contextmenu', canvasRightClick);
+    canvas.removeEventListener("mousedown", canvasMouseClick);
 
-   
-
-/*     btnAgree.removeEventListener('click', btnArgeeClick);
     btnTen.removeEventListener('click', btnTenClick);
     btnRnd.removeEventListener('click', btnRndClick);
-    quit.removeEventListener('click', quitClick); */
+    btnAgree.removeEventListener('click', btnArgeeClick);
+    quit.removeEventListener('click', quitClick);
+
+
+
+    /*     btnAgree.removeEventListener('click', btnArgeeClick);
+        btnTen.removeEventListener('click', btnTenClick);
+        btnRnd.removeEventListener('click', btnRndClick);
+        quit.removeEventListener('click', quitClick); */
 
     canvasClick = function (evt) {
         if (endGame == false) {
@@ -193,6 +249,7 @@ canvas.removeEventListener('click', canvasClick);
 
         if (mines[userX][userY] == true) {
             console.log('Boom!');
+            clearInterval(timerId);
             stat.textContent = "Вы проиграли. Эхь";
             endGame = true;
             isOpened[userX][userY] = true;
@@ -222,6 +279,7 @@ canvas.removeEventListener('click', canvasClick);
 
         if (countOpened == 100 - howMuch) {
             console.log("Win!");
+            clearInterval(timerId);
             for (let p = 0; p < 10; p++) {
                 for (let s = 0; s < 10; s++) {
                     if (isMarked[p][s] == false && mines[p][s] == true) {
@@ -230,8 +288,39 @@ canvas.removeEventListener('click', canvasClick);
                 }
             }
             stat.textContent = "Вы молодесь! Вы выиграли!";
-            mf.textContent = '';
+            //mf.textContent = '';
             endGame = true;
+
+            quitWinClick = function () {
+                winner.classList.remove("visible-block");
+                winner.classList.add("hidden");
+                quitWin.removeEventListener("click", quitWinClick);
+                
+            };
+
+            nameWinClick = function (evt) {
+                evt.preventDefault();
+                quitWinClick();
+                winners.classList.remove("hidden");
+                winners.classList.add("visible-block");
+                nameWin.removeEventListener("click", nameWinClick);
+
+                thankClick = function(){
+                winners.classList.remove("visible-block");
+                winners.classList.add("hidden");
+                thank.removeEventListener('click', thankClick);
+                };
+
+                thank.addEventListener('click', thankClick);
+
+            };
+
+
+            winner.classList.remove("hidden");
+            winner.classList.add("visible-block");
+            quitWin.addEventListener("click", quitWinClick);
+            nameWin.addEventListener("click", nameWinClick);
+
         }
 
     }
