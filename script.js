@@ -23,14 +23,16 @@ let hours = document.querySelector(".hours");
 let minutes = document.querySelector(".minutes");
 let seconds = document.querySelector(".seconds");
 
-let start, end;
+let start, end, differ;
 
 let winner = document.querySelector(".winner");
 let quitWin = document.querySelector('.quit-win');
+let inputWin = document.getElementById("winner-name");
 let quitWinClick;
 
 let nameWin = document.querySelector(".name");
 let winners = document.querySelector(".winners");
+let winnersTable = document.querySelector(".winners-list");
 let nameWinClick;
 
 let thank = document.querySelector('.thank');
@@ -128,7 +130,7 @@ function play() {
 
     timerId = setInterval(() => {
         end = new Date();
-        let differ = end - start;
+        differ = end - start;
         console.log(differ);
         secondsValue++;
         if (secondsValue == 60) {
@@ -295,25 +297,84 @@ function play() {
                 winner.classList.remove("visible-block");
                 winner.classList.add("hidden");
                 quitWin.removeEventListener("click", quitWinClick);
-                
+
             };
 
             nameWinClick = function (evt) {
                 evt.preventDefault();
                 quitWinClick();
+                //console.log(+inputWin.value);
+                /*  let obj = {
+                     inputWin.value: differ
+                 }; */
+                localStorage.setItem(differ, inputWin.value);
+
+                let array = []; //массив для сортировки ключей из всего LS
+                for (let i = 0; i < localStorage.length; i++) {
+                    let key = localStorage.key(i);
+                    array.push(key);
+                }
+                console.log(array);
+                let newArray = array.sort((a, b) => a - b); //все отсортированные ключи
+                if (localStorage.length > 5) {
+                    newArray.slice(0, 5);
+                } // первые 5 отсортированных ключей
+                console.log(array, newArray);
+
+                let forDelete = newArray.splice(5, localStorage.length - 5);
+
+                for (let i = 0; i < forDelete.length; i++) {
+                    localStorage.removeItem(forDelete[i]);
+                }
+
                 winners.classList.remove("hidden");
                 winners.classList.add("visible-block");
                 nameWin.removeEventListener("click", nameWinClick);
 
-                thankClick = function(){
+                let tableHeader = document.createElement('tr');
+                winnersTable.append(tableHeader);
+                let tableHeaderData = [];
+                for (let i = 0; i < 3; i++) {
+                    tableHeaderData[i] = document.createElement('th');
+                    tableHeader.append(tableHeaderData[i]);
+                }
+                tableHeaderData[1].textContent = 'Имя';
+                tableHeaderData[2].textContent = 'Время';
+
+                let tableRows = []; //5 или менее строк
+                let tableData = []; //3 столбца
+                for (let i = 0; i < newArray.length; i++) {
+                    tableRows[i] = document.createElement('tr');
+                    winnersTable.append(tableRows[i]);
+                    for (let j = 0; j < 3; j++) {
+                        tableData[j] = document.createElement('td');
+                        tableRows[i].append(tableData[j]);
+                    }
+                    
+                    tableData[0].textContent = i + 1;
+                    tableData[1].textContent = `${localStorage.getItem(newArray[i])}`;
+                    tableData[2].textContent = `${Math.floor(newArray[i]/1000/60/60)} ч. ${Math.floor((newArray[i]/1000/60)%60)} мин. ${Math.floor((newArray[i]/1000)%60)} с.`;
+                }
+
+            };
+            /*
+
+                for (let i = 0; i < newArray.length; i++) {
+                    winnersList.innerHTML = `${winnersList.innerHTML}
+                        <li>${localStorage.getItem(newArray[i])}, ${newArray[i]}</li>`;
+                }
+*/
+            thankClick = function () {
                 winners.classList.remove("visible-block");
                 winners.classList.add("hidden");
                 thank.removeEventListener('click', thankClick);
-                };
-
-                thank.addEventListener('click', thankClick);
-
+                winnersTable.innerHTML = '';
+                //localStorage.clear();
             };
+
+            thank.addEventListener('click', thankClick);
+
+            //};
 
 
             winner.classList.remove("hidden");
