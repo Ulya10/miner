@@ -79,7 +79,6 @@ function askMines() {
             howMuch = +input.value;
             think.classList.remove('visible-block');
             think.classList.add('hidden');
-            //console.log(howMuch, typeof (howMuch));
             modal.classList.add("hidden");
             howMuchMines.textContent = howMuch;
             main.classList.add('visible');
@@ -113,25 +112,21 @@ function askMines() {
 
 }
 
-
-
 function play() {
     seconds.textContent = 0;
     minutes.textContent = 0;
     hours.textContent = 0;
     clearInterval(timerId);
     start = new Date();
-    //let startTime = start.getTime();
     secondsValue = 0;
     minutesValue = 0;
     hoursValue = 0;
-    //console.log(startTime);
+
 
 
     timerId = setInterval(() => {
         end = new Date();
         differ = end - start;
-        console.log(differ);
         secondsValue++;
         if (secondsValue == 60) {
             secondsValue = 0;
@@ -148,11 +143,7 @@ function play() {
 
 
     btnPlayClick = function () {
-
-        console.log("I asked!");
-        //console.log(canvasMouseClick);
         askMines();
-        //play();
     };
 
     btnPlay.addEventListener('click', btnPlayClick);
@@ -165,13 +156,6 @@ function play() {
     btnRnd.removeEventListener('click', btnRndClick);
     btnAgree.removeEventListener('click', btnArgeeClick);
     quit.removeEventListener('click', quitClick);
-
-
-
-    /*     btnAgree.removeEventListener('click', btnArgeeClick);
-        btnTen.removeEventListener('click', btnTenClick);
-        btnRnd.removeEventListener('click', btnRndClick);
-        quit.removeEventListener('click', quitClick); */
 
     canvasClick = function (evt) {
         if (endGame == false) {
@@ -219,7 +203,6 @@ function play() {
         evt.preventDefault();
         if (endGame == false) {
             if (evt.which === 2) {
-                // console.log("Middle");
                 let middleX, middleY;
                 middleX = Math.trunc(evt.clientY / grid);
                 middleY = Math.trunc(evt.clientX / grid);
@@ -274,7 +257,6 @@ function play() {
                 drawCountsAndBg(userX, userY);
                 isOpened[userX][userY] = true;
                 countOpened++;
-                //drawCountsAndBg(userX, userY);
                 openSafe(userX, userY);
             }
         }
@@ -290,7 +272,6 @@ function play() {
                 }
             }
             stat.textContent = "Вы молодесь! Вы выиграли!";
-            //mf.textContent = '';
             endGame = true;
 
             quitWinClick = function () {
@@ -303,10 +284,6 @@ function play() {
             nameWinClick = function (evt) {
                 evt.preventDefault();
                 quitWinClick();
-                //console.log(+inputWin.value);
-                /*  let obj = {
-                     inputWin.value: differ
-                 }; */
                 localStorage.setItem(differ, inputWin.value);
 
                 let array = []; //массив для сортировки ключей из всего LS
@@ -314,12 +291,11 @@ function play() {
                     let key = localStorage.key(i);
                     array.push(key);
                 }
-                console.log(array);
+
                 let newArray = array.sort((a, b) => a - b); //все отсортированные ключи
                 if (localStorage.length > 5) {
                     newArray.slice(0, 5);
                 } // первые 5 отсортированных ключей
-                console.log(array, newArray);
 
                 let forDelete = newArray.splice(5, localStorage.length - 5);
 
@@ -357,13 +333,7 @@ function play() {
                 }
 
             };
-            /*
-
-                for (let i = 0; i < newArray.length; i++) {
-                    winnersList.innerHTML = `${winnersList.innerHTML}
-                        <li>${localStorage.getItem(newArray[i])}, ${newArray[i]}</li>`;
-                }
-*/
+            
             thankClick = function () {
                 winners.classList.remove("visible-block");
                 winners.classList.add("hidden");
@@ -373,9 +343,6 @@ function play() {
             };
 
             thank.addEventListener('click', thankClick);
-
-            //};
-
 
             winner.classList.remove("hidden");
             winner.classList.add("visible-block");
