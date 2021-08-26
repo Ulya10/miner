@@ -133,7 +133,7 @@ function play() {
             minutesValue++;
             if (minutesValue == 60) {
                 minutesValue = 0;
-                hoursValue++;
+                hoursValue++; //Уля - жопа
             }
         }
         seconds.textContent = secondsValue;
@@ -326,14 +326,14 @@ function play() {
                         tableData[j] = document.createElement('td');
                         tableRows[i].append(tableData[j]);
                     }
-                    
+
                     tableData[0].textContent = i + 1;
                     tableData[1].textContent = `${localStorage.getItem(newArray[i])}`;
                     tableData[2].textContent = `${Math.floor(newArray[i]/1000/60/60)} ч. ${Math.floor((newArray[i]/1000/60)%60)} мин. ${Math.floor((newArray[i]/1000)%60)} с.`;
                 }
 
             };
-            
+
             thankClick = function () {
                 winners.classList.remove("visible-block");
                 winners.classList.add("hidden");
